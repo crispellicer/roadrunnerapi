@@ -1,0 +1,703 @@
+openapi: 3.0.2
+servers:
+  - url: https://api.roadrunner.com
+info:
+  description: API for making registrations in different races
+
+  version: "1.0"
+  title: Road Runner API
+tags:
+  - name: Users
+    description: Users operations
+  - name: Registrations
+    description: Registrations operations
+  - name: Races
+    description: Races operations
+paths:
+  /Users:
+    get:
+      tags:
+        - Users
+      summary: Users' list
+      description: It obtains the information of all registered Users
+      operationId: getUsers
+      parameters:
+        - $ref: '#/components/parameters/UserName'
+      responses:
+        '200':
+          description: The list of users is returned correctly
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      tags:
+        - Users
+      summary: Registration of a new user
+      description: It registers a new user in the application
+      operationId: postUser
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+            examples:
+              example1:
+                value:
+                  name: Cristina
+                  surname: Pellicer Garcia
+                  telephone: 222333555
+                  birthDate: 1996-03-17
+              example2:
+                value:
+                  name: Adrian
+                  surname: Garcia Gonzalez
+                  telephone: 111222999
+                  birthDate: 1991-08-10
+      responses:
+        '201':
+          description: The user is registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /users/{userId}:
+    get:
+      tags:
+        - Users
+      summary: It obtains the information of a specific user
+      description: It obtains the information of the user whose id is given in the URL
+      operationId: getUser
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '200':
+          description: User information is returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserInformation'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      tags:
+        - Users
+      summary: Delete a user
+      description: Delete a user from the database based on the userId
+      operationId: deleteUser
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      tags:
+        - Users
+      summary: Modify a user
+      description: It modifies the information of the User whose id is given in the URL
+      operationId: putUser
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+            examples:
+              example1:
+                value:
+                  name: Cristina
+                  surname: Pellicer Garcia
+                  telephone: 222333555
+                  birthDate: 1996-03-17
+              example2:
+                value:
+                  name: Adrian
+                  surname: Garcia Gonzalez
+                  telephone: 111222999
+                  birthDate: 1991-08-10
+      responses:
+        '200':
+          description: The user has been successfully modified
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserInformation'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /registrations:
+    get:
+      tags:
+        - Registrations
+      summary: Registrations' list
+      description: It obtains the information of all registrations made
+      operationId: getRegistrations
+      responses:
+        '200':
+          description: The list of registrations is returned correctly
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Registration'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /registrations/{registrationId}:
+    get:
+      tags:
+        - Registrations
+      summary: It obtains the information of a specific registration
+      description: It obtains the information of the registration whose id is given in the URL
+      operationId: getRegistration
+      parameters:
+        - $ref: '#/components/parameters/RegistrationId'
+      responses:
+        '200':
+          description: Registration information is returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegistrationInformation'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      tags:
+        - Registrations
+      summary: Delete a registration
+      description: Delete a race registration based on the registrationId
+      operationId: deleteRegistration
+      parameters:
+        - $ref: '#/components/parameters/RegistrationId'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /races/{raceId}/registrations:
+    get:
+      tags:
+        - Registrations
+      summary: It obtains information about the registrations in a specific race
+      description: It obtains the information about the registration in a specific race, whose id is given in the URL
+      operationId: getRegistrationByRaceId
+      parameters:
+        - $ref: '#/components/parameters/RaceId'
+      responses:
+        '200':
+          description: Registration information is returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegistrationInformation'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      tags:
+        - Registrations
+      summary: Registration of a new registration
+      description: It registers a new registration in a certain race, whose id is given in the URL
+      operationId: postRegistration
+      parameters:
+        - $ref: '#/components/parameters/RaceId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegistrationInDTO'
+            examples:
+              example1:
+                value:
+                  user: 2
+              example2:
+                value:
+                  user: 5
+      responses:
+        '201':
+          description: The registration is registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Registration'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /users/{userId}/registrations:
+    get:
+      tags:
+        - Registrations
+      summary: It obtains information about the registrations of a specific user
+      description: It obtains the information about the registration of a specific user, whose id is given in the URL
+      operationId: getRegistrationByUserId
+      parameters:
+        - $ref: '#/components/parameters/UserId'
+      responses:
+        '200':
+          description: Registration information is returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegistrationOutDTO'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /races:
+    get:
+      tags:
+        - Races
+      summary: Races' list
+      description: It obtains the information of all registered races
+      operationId: getRaces
+      parameters:
+        - $ref: '#/components/parameters/City'
+      responses:
+        '200':
+          description: The list of races is returned correctly
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Race'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      tags:
+        - Races
+      summary: Registration of a new race
+      description: It registers a new race in the database
+      operationId: postRace
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Race'
+            examples:
+              example1:
+                value:
+                  name: Desertica
+                  distance: 8K
+                  type: Running
+                  city: Zaragoza
+                  registrationPrice: 10
+                  raceDate: 2023-05-17
+                  longitude: 20.2
+                  latitude: 1.56
+              example2:
+                value:
+                  name: CaixaBank
+                  distance: 10K
+                  type: Running
+                  city: Zaragoza
+                  registrationPrice: 20
+                  raceDate: 2023-09-28
+                  longitude: 20.2
+                  latitude: 1.56
+      responses:
+        '201':
+          description: The race is registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Race'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+  /races/{raceId}:
+    get:
+      tags:
+        - Races
+      summary: It obtains the information of a specific race
+      description: It obtains the information of the race whose id is given in the URL
+      operationId: getRace
+      parameters:
+        - $ref: '#/components/parameters/RaceId'
+      responses:
+        '200':
+          description: Race information is returned
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RaceInformation'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      tags:
+        - Races
+      summary: Delete a race
+      description: Delete a race from the database based on the raceId
+      operationId: deleteRace
+      parameters:
+        - $ref: '#/components/parameters/RaceId'
+      responses:
+        '204':
+          $ref: '#/components/responses/NoContent'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    put:
+      tags:
+        - Races
+      summary: Modify a race
+      description: It modifies the information of the race whose id is given in the URL
+      operationId: putRace
+      parameters:
+        - $ref: '#/components/parameters/RaceId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Race'
+            examples:
+              example1:
+                value:
+                  name: Desertica
+                  distance: 8K
+                  type: Running
+                  city: Zaragoza
+                  registrationPrice: 10
+                  raceDate: 2023-05-17
+                  longitude: 20.2
+                  latitude: 1.56
+              example2:
+                value:
+                  name: CaixaBank
+                  distance: 10K
+                  type: Running
+                  city: Zaragoza
+                  registrationPrice: 20
+                  raceDate: 2023-09-28
+                  longitude: 20.2
+                  latitude: 1.56
+      responses:
+        '200':
+          description: The race has been successfully modified
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RaceInformation'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: number
+          description: User id
+          example: 20
+        name:
+          type: string
+          description: User name
+          example: Cristina
+        surname:
+          type: string
+          description: User surname
+          example: Pellicer
+        telephone:
+          type: string
+          description: User telephone number
+          example: 555666777
+        birthDate:
+          type: date
+          description: User birth date
+          example: 1990-05-20
+    Registration:
+      type: object
+      properties:
+        id:
+          type: number
+          description: registration id
+          example: 3
+        race:
+          $ref: '#/components/schemas/Race'
+        user:
+          $ref: '#/components/schemas/User'
+    RegistrationOutDTO:
+      type: object
+      properties:
+        id:
+          type: number
+          description: Registration id
+          example: 3
+        raceName:
+          type: string
+          description: Race name
+          example: Maraton
+        distance:
+          type: string
+          description: Race distance
+          example: 10K
+        city:
+          type: string
+          description: Race city
+          example: Huesca
+    RegistrationInDTO:
+      type: object
+      properties:
+        user:
+          type: number
+          description: User id
+          example: 3
+    Race:
+      type: object
+      properties:
+        id:
+          type: number
+          description: Race id
+          example: 12
+        name:
+          type: string
+          description: race name
+          example: Running
+        distance:
+          type: string
+          description: Race distance
+          example: 21K
+        type:
+          type: string
+          description:  Race type
+          example: Trail
+        city:
+          type: string
+          description: Race city
+          example: Belchite
+        registrationPrice:
+          type: number
+          description: Registration price
+          example: 20.50
+        raceDate:
+          type: date
+          description: Race date
+          example: 2024-01-29
+        longitude:
+          type: number
+          description: Race longitude
+          example: 20.38
+        latitude:
+          type: number
+          description: Race latitude
+          example: 0.86
+    UserInformation:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/User'
+      properties:
+        id:
+          type: integer
+          description: User ID
+          example: 5
+    RegistrationInformation:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/Registration'
+      properties:
+        id:
+          type: integer
+          description: Registration ID
+          example: 9
+    RaceInformation:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/Race'
+      properties:
+        id:
+          type: integer
+          description: Race ID
+          example: 1
+    BadRequest:
+      type: object
+      properties:
+        code:
+          type: string
+          description: status code
+          example: 400
+        message:
+          type: string
+          description: Error message
+          example: Validation error
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/ErrorField'
+    ErrorField:
+      type: object
+      description: Validation error on an input field
+      properties:
+        fieldName:
+          type: string
+          description: The field where the error occurred
+          example: name
+        message:
+          type: string
+          description: Error message associated with the field
+          example: This field is required
+    NotFound:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Status code
+          example: 404
+        message:
+          type: string
+          description: Error message
+          example: Resource not found
+    InternalServerError:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Status code
+          example: 500
+        message:
+          type: string
+          description: Error message
+          example: Internal Server Error
+  responses:
+    NoContent:
+      description: No Content
+    BadRequest:
+      description: Validation error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/BadRequest'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/NotFound'
+    InternalServerError:
+      description: Internal Server Error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/InternalServerError'
+  parameters:
+    UserId:
+      name: UserId
+      in: path
+      description: User ID
+      required: true
+      schema:
+        type: integer
+      examples:
+        example1:
+          value: 1
+        example2:
+          value: 32
+    RegistrationId:
+      name: registrationId
+      in: path
+      description: Registration ID
+      required: true
+      schema:
+        type: integer
+      examples:
+        example1:
+          value: 5
+        example2:
+          value: 20
+    RaceId:
+      name: raceId
+      in: path
+      description: Race ID
+      required: true
+      schema:
+        type: integer
+      examples:
+        example1:
+          value: 2
+        example2:
+          value: 30
+    City:
+      name: city
+      in: query
+      description: Race city
+      required: false
+      schema:
+        type: string
+      examples:
+        example1:
+          value: Zaragoza
+        example2:
+          value: Madrid
+    UserName:
+      name: name
+      in: query
+      description: User name
+      required: false
+      schema:
+        type: string
+      examples:
+        example1:
+          value: Cristina
+        example2:
+          value: Santiago
+  requestBodies:
+    User:
+      description: New User data
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/User'
+    Registration:
+      description: New registration data
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Registration'
+    Race:
+      description: New race data
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Race'
