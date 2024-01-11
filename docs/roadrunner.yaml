@@ -14,7 +14,7 @@ tags:
   - name: Races
     description: Races operations
 paths:
-  /Users:
+  /users:
     get:
       tags:
         - Users
